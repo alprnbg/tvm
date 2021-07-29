@@ -47,3 +47,19 @@ def pytest_sessionfinish(session, exitstatus):
     if session.config.option.markexpr != "":
         if exitstatus == ExitCode.NO_TESTS_COLLECTED:
             session.exitstatus = ExitCode.OK
+
+
+from xdist.scheduler.loadscope import LoadScopeScheduling
+
+
+class MyScheduler(LoadScopeScheduling):
+    def _split_scope(self, nodeid):
+        # NOTE: test_tvm_testing_features contains parametrization-related tests, and must be
+        # serialized on a single host.
+        if "test_tvm_testing_features" in nodeid:
+            return "functional-tests"
+        return nodeid
+
+
+def pytest_xdist_make_scheduler(config, log):
+    return MyScheduler(config, log)
