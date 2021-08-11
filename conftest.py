@@ -52,7 +52,7 @@ def pytest_sessionfinish(session, exitstatus):
 from xdist.scheduler.loadscope import LoadScopeScheduling
 
 
-class MyScheduler(LoadScopeScheduling):
+class TvmTestScheduler(LoadScopeScheduling):
     def _split_scope(self, nodeid):
         # NOTE: test_tvm_testing_features contains parametrization-related tests, and must be
         # serialized on a single host.
@@ -62,4 +62,4 @@ class MyScheduler(LoadScopeScheduling):
 
 
 def pytest_xdist_make_scheduler(config, log):
-    return MyScheduler(config, log)
+    return TvmTestScheduler(config, log)
