@@ -35,6 +35,8 @@
 
 set -xeuo pipefail
 
+set
+
 function show_usage() {
     cat <<EOF
 Usage: docker/bash.sh [-i|--interactive] [--net=host] [--cpuset-cpus=<cpus>]
