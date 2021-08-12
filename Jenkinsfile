@@ -108,9 +108,6 @@ def cancel_previous_build() {
 cancel_previous_build()
 
 stage("Sanity Check") {
-  environment {
-    CI = 'true'
-  }
   timeout(time: max_time, unit: 'MINUTES') {
     node('CPU') {
       ws(per_exec_ws("tvm/sanity")) {
@@ -163,9 +160,6 @@ def unpack_lib(name, libs) {
 }
 
 stage('Build') {
-  environment {
-    CI = 'true'
-  }
   parallel 'BUILD: GPU': {
     node('GPUBUILD') {
       ws(per_exec_ws("tvm/build-gpu")) {
@@ -250,9 +244,6 @@ stage('Build') {
 }
 
 stage('Unit Test') {
-  environment {
-    CI = 'true'
-  }
   parallel 'python3: GPU': {
     node('TensorCore') {
       ws(per_exec_ws("tvm/ut-python-gpu")) {
@@ -312,9 +303,6 @@ stage('Unit Test') {
 }
 
 stage('Integration Test') {
-  environment {
-    CI = 'true'
-  }
   parallel 'topi: GPU': {
     node('GPU') {
       ws(per_exec_ws("tvm/topi-python-gpu")) {
@@ -371,9 +359,6 @@ stage('Integration Test') {
 
 /*
 stage('Build packages') {
-  environment {
-    CI = 'true'
-  }
   parallel 'conda CPU': {
     node('CPU') {
       sh "${docker_run} tlcpack/conda-cpu ./conda/build_cpu.sh
@@ -391,9 +376,6 @@ stage('Build packages') {
 */
 
 stage('Deploy') {
-    environment {
-      CI = 'true'
-    }
     node('doc') {
       ws(per_exec_ws("tvm/deploy-docs")) {
         if (env.BRANCH_NAME == "main") {
