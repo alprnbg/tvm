@@ -121,7 +121,7 @@ stage("Sanity Check") {
 // Run make. First try to do an incremental make from a previous workspace in hope to
 // accelerate the compilation. If something wrong, clean the workspace and then
 // build from scratch.
-def make(docker_type, path, make_flag) {
+def make(docker_type, path, make_flag='') {
   timeout(time: max_time, unit: 'MINUTES') {
     try {
       sh "${docker_run} ${docker_type} ./tests/scripts/task_build.sh ${path} ${make_flag}"
@@ -165,11 +165,11 @@ stage('Build') {
       ws(per_exec_ws("tvm/build-gpu")) {
         init_git()
         sh "${docker_run} ${ci_gpu} ./tests/scripts/task_config_build_gpu.sh"
-        make(ci_gpu, 'build', '-j')
+        make(ci_gpu, 'build')
         pack_lib('gpu', tvm_multilib)
         // compiler test
         sh "${docker_run} ${ci_gpu} ./tests/scripts/task_config_build_gpu_vulkan.sh"
-        make(ci_gpu, 'build2', '-j')
+        make(ci_gpu, 'build2')
       }
     }
   },
@@ -178,7 +178,7 @@ stage('Build') {
       ws(per_exec_ws("tvm/build-cpu")) {
         init_git()
         sh "${docker_run} ${ci_cpu} ./tests/scripts/task_config_build_cpu.sh"
-        make(ci_cpu, 'build', '-j')
+        make(ci_cpu, 'build')
         pack_lib('cpu', tvm_multilib)
         timeout(time: max_time, unit: 'MINUTES') {
           sh "${docker_run} ${ci_cpu} ./tests/scripts/task_ci_setup.sh"
@@ -199,7 +199,7 @@ stage('Build') {
       ws(per_exec_ws("tvm/build-wasm")) {
         init_git()
         sh "${docker_run} ${ci_wasm} ./tests/scripts/task_config_build_wasm.sh"
-        make(ci_wasm, 'build', '-j')
+        make(ci_wasm, 'build')
         timeout(time: max_time, unit: 'MINUTES') {
           sh "${docker_run} ${ci_wasm} ./tests/scripts/task_ci_setup.sh"
           sh "${docker_run} ${ci_wasm} ./tests/scripts/task_web_wasm.sh"
@@ -212,7 +212,7 @@ stage('Build') {
       ws(per_exec_ws("tvm/build-i386")) {
         init_git()
         sh "${docker_run} ${ci_i386} ./tests/scripts/task_config_build_i386.sh"
-        make(ci_i386, 'build', '-j')
+        make(ci_i386, 'build')
         pack_lib('i386', tvm_multilib)
       }
     }
@@ -222,7 +222,7 @@ stage('Build') {
       ws(per_exec_ws("tvm/build-arm")) {
         init_git()
         sh "${docker_run} ${ci_arm} ./tests/scripts/task_config_build_arm.sh"
-        make(ci_arm, 'build', '-j')
+        make(ci_arm, 'build')
         pack_lib('arm', tvm_multilib)
       }
     }
@@ -232,7 +232,7 @@ stage('Build') {
       ws(per_exec_ws("tvm/build-qemu")) {
         init_git()
         sh "${docker_run} ${ci_qemu} ./tests/scripts/task_config_build_qemu.sh"
-        make(ci_qemu, 'build', '-j')
+        make(ci_qemu, 'build')
         timeout(time: max_time, unit: 'MINUTES') {
           sh "${docker_run} ${ci_qemu} ./tests/scripts/task_ci_setup.sh"
           sh "${docker_run} ${ci_qemu} ./tests/scripts/task_python_microtvm.sh"
